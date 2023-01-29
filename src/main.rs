@@ -13,8 +13,8 @@ struct Args {
     #[arg(short = 'f')]
     /// Choose color. Can be `rgb`, `hsl`, or `hex`. Defaults to `hex`
     format: Option<String>,
-    /// Coordinates of the pixel you want to get the color from.
-    coordinates: String,
+    /// Location of the pixel you want to get the color from.
+    location: String,
 }
 
 fn read(path: &Path) -> Result<RgbaImage, String> {
@@ -46,14 +46,13 @@ fn read(path: &Path) -> Result<RgbaImage, String> {
 fn main() -> io::Result<()> {
     let args = Args::parse();
 
-    let coords: Vec<u32> = args
-        .coordinates
+    let loc: Vec<u32> = args
+        .location
         .split(&['x', ',', 'X'][..])
         .into_iter()
         .map(|x| x.parse().unwrap())
         .collect();
 
-    let dims = coords.clone();
     let mut img_path: String = "-".to_string();
 
     if args.image != None {
@@ -61,16 +60,12 @@ fn main() -> io::Result<()> {
     }
 
     let file = read(Path::new(&img_path)).expect("Not found");
+    let raw_pixel = file.get_pixel(loc[0], loc[1]);
 
-    if dims[0] > file.dimensions().0 || dims[1] > file.dimensions().1 {
-        panic!("Coordinates outside file limit.")
-    }
-
-    let raw_pixel = file.get_pixel(coords[0], coords[1]);
     let parsed_pixel = Rgb::from(&(
         i16::from(raw_pixel[0]),
         i16::from(raw_pixel[1]),
-        i16::from(raw_pixel[3]),
+        i16::from(raw_pixel[2]),
     ));
 
     match args.format.unwrap_or_default().as_str() {

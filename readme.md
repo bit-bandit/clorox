@@ -3,7 +3,7 @@
 
 ## Synopsis
 ```
-clorox [options...] [dimension]
+clorox [options...] [location]
 ```
 
 ### Options:
@@ -11,13 +11,15 @@ clorox [options...] [dimension]
 * `-f`, `--format`: Change color output display. Can be:
   * `rgb`: `255,255,255`
   * `hex`: `#FFFFFF`
-  * `hsl`: ``
 
 ### Dimension 
-MUST be the X Y coordinates of the pixel in question. 
+The X,Y location of the pixel in question. 
 
 ## Examples
 ```sh
 # Picking an image
 clorox -i Pictures/test.png 255,255
+
+# Using `grim` and `slurp` to grab the colors from a screenshot
+grim - | clorox $(slurp -p -f "%Xx%Y")
 ```
